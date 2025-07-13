@@ -1,0 +1,36 @@
+spring:
+  ldap:
+    embedded:
+      enabled: true
+      base-dn: dc=example,dc=com
+      ldif: classpath:users.ldif
+      port: 8389
+      url: ldap://localhost:8389
+  cloud:
+    dataflow:
+      security:
+        authentication:
+          ldap:
+            enabled: true
+            url: ldap://localhost:8389/dc=example,dc=com
+            userDnPattern: uid={0},ou=people,dc=example,dc=com
+            groupSearchBase: ou=groups
+            groupSearchFilter: member={0}
+            groupRoleAttribute: cn
+        authorization:
+          enabled: true
+          rules:
+            - role: ROLE_VIEW
+              expression: hasRole('ROLE_VIEW')
+            - role: ROLE_CREATE
+              expression: hasRole('ROLE_CREATE')
+            - role: ROLE_MANAGE
+              expression: hasRole('ROLE_MANAGE')
+management:
+  endpoints:
+    web:
+      base-path: /management
+  security:
+    roles: MANAGE
+server:
+  port: 9393
